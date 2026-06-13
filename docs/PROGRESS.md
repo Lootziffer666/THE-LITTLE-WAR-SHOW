@@ -17,7 +17,7 @@ Lebendes Log. **Pro Schritt fortschreiben:** Status, was statisch geprüft wurde
 ## Milestone 1 — Fundament + Bühnen-Proof
 | # | Schritt | Status | Statisch geprüft | CI | Windows-Evidence |
 |---|---|---|---|---|---|
-| 00 | project-scaffold | ⬜ | – | – | – |
+| 00 | project-scaffold | 🟢 | project.godot/Main.tscn/Stub geparst; Assets nach assets/sprites umgezogen | grün (Run #14) | offen (auf Windows) |
 | 01 | stage-diorama | ⬜ | – | – | – |
 | 02 | camera-light-environment | ⬜ | – | – | – |
 | 03 | performer | ⬜ | – | – | – |
