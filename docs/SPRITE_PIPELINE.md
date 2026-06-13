@@ -12,9 +12,13 @@ assets/sprites/puppet1/ 35 Posen  (gleiches Schema)  → M1-Puppe (zerlegbar)
 assets/sprites/boy/     27 Posen  (englisch benannt)  → reserviert für M2
 ```
 
-Eigenschaften: einzeln freigestellt, transparent, je ~15–75 KB. Die Freistellung ist
-**bewusst grob** (raue Kanten, evtl. Halo). Das ist für M1 akzeptabel und wird kaschiert
-(s. u.); der saubere Cleanup ist M3.
+Eigenschaften: einzeln freigestellt, transparent, je ~15–75 KB. Die Freistellung war
+ursprünglich grob (heller KI-Saum/Halo). **Dieser helle Saum wurde bereits entfernt** —
+per Weiß-Matte-Entfernung über `tools/defringe_sprites.py` (rechnet den hellen
+Hintergrund-Anteil aus den Randpixeln heraus, **ohne Erosion** → dünne Merkmale wie
+Schnüre/Gewehrläufe bleiben erhalten). Verbleibende M3-Arbeit ist feiner: einzelne
+real *kaputt geschnittene* Posen (fehlende Bildteile) müssen neu zugeschnitten/regeneriert
+werden — das kann der Defringe nicht reparieren.
 
 ## Wie die groben Kanten in M1 sauber wirken
 - **Alpha-Scissor** (`ALPHA_CUT_DISCARD`, Schwelle ~0.5) auf beiden Figuren-Materialien
