@@ -1,0 +1,57 @@
+/**
+ * WebGPU wiring for React-Three-Fiber (R3F v9).
+ *
+ * Three ships two entry points: the classic WebGL `three` and the node-based
+ * `three/webgpu`. We standardise on `three/webgpu` so every material can be a
+ * TSL NodeMaterial that compiles to *both* WGSL (WebGPU) and GLSL (WebGL2),
+ * giving us the cutting-edge path with an automatic fallback.
+ *
+ * `extend(THREE)` teaches R3F's reconciler about every class in the WebGPU
+ * build so they are usable as JSX (`<meshStandardNodeMaterial />`, etc.), and
+ * the module augmentation gives those intrinsics full TypeScript types.
+ *
+ * Verified against three r0.184 + @react-three/fiber 9.6.1.
+ */
+import * as THREE from 'three/webgpu'
+import { extend, type ThreeToJSXElements } from '@react-three/fiber'
+
+declare module '@react-three/fiber' {
+  interface ThreeElements extends ThreeToJSXElements<typeof THREE> {}
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+extend(THREE as any)
+
+/**
+ * Async factory handed to `<Canvas gl={...}>`. R3F awaits the returned promise,
+ * which is exactly how a `WebGPURenderer` (which needs `await init()`) wants to
+ * be constructed. If WebGPU is unavailable the renderer transparently falls
+ * back to its WebGL2 backend.
+ */
+export async function createRenderer(props: ConstructorParameters<typeof THREE.WebGPURenderer>[0]) {
+  const renderer = new THREE.WebGPURenderer({
+    antialias: true,
+    alpha: false,
+    powerPreference: 'high-performance',
+    // `forceWebGL` stays false: prefer WebGPU, fall back automatically.
+    ...props,
+  })
+  await renderer.init()
+
+  // Filmic, warm grade lives in post; the renderer only owns the final
+  // tone-map + sRGB encode (applied by RenderPipeline.outputColorTransform).
+  renderer.toneMapping = THREE.ACESFilmicToneMapping
+  renderer.toneMappingExposure = 1.05
+  renderer.shadowMap.enabled = true
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap
+
+  return renderer
+}
+
+/** True when the active renderer backend is WebGPU (vs. the WebGL2 fallback). */
+export function isWebGPUBackend(renderer: unknown): boolean {
+  const r = renderer as { backend?: { isWebGPUBackend?: boolean } } | null
+  return Boolean(r?.backend?.isWebGPUBackend)
+}
+
+export { THREE }
