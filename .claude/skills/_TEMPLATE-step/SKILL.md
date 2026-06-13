@@ -26,7 +26,7 @@ description: VORLAGE (nicht ausführen) — Kopiere diesen Ordner zu .claude/ski
 <Explizite Pfade. Nur diese anfassen.>
 
 ## Ready-to-paste Agent-Prompt
-> <Selbstständiger Brief nach Schablone aus `docs/AGENT_BRIEFING.md` §5 bzw. via `brief-fable`: Sicherheits-Präambel zuerst, genau ein Belang, Aufbau-in-Code, API-Gegenprüfung, testbare DoF, explizite Verbote, Abschluss mit Gate/Review/PROGRESS/Commit/Push.>
+> <Selbstständiger Brief nach Schablone aus `docs/AGENT_BRIEFING.md` §5 bzw. via `brief-frontier-agent`: Sicherheits-Präambel zuerst, genau ein Belang, Aufbau-in-Code, API-Gegenprüfung, testbare DoF, explizite Verbote, Abschluss mit Gate/Review/PROGRESS/Commit/Push.>
 
 ## Verification
 - **Statisch:** <was im Container/Code prüfbar ist>
