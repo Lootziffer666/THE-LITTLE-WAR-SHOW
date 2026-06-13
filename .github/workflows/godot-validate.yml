@@ -1,0 +1,61 @@
+name: Godot Validate
+
+# Automatisches Qualitäts-Gate: prüft bei jedem Push, dass das Godot-Projekt
+# importiert und ohne Script-/Parse-Fehler startet. Solange es noch kein
+# project.godot gibt (Planungsphase), läuft der Job "leer grün".
+
+on:
+  push:
+    branches: [ "claude/practical-lovelace-vz59lr", "main" ]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Guard — Godot-Projekt vorhanden?
+        id: guard
+        run: |
+          if [ -f project.godot ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "Noch kein project.godot (Planungsphase) — nichts zu validieren. Pass."
+          fi
+
+      - name: Godot 4.3 headless laden
+        if: steps.guard.outputs.present == 'true'
+        run: |
+          set -euo pipefail
+          GODOT_VERSION="4.3-stable"
+          URL="https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}/Godot_v${GODOT_VERSION}_linux.x86_64.zip"
+          curl -fL "$URL" -o godot.zip
+          unzip -oq godot.zip
+          mv "Godot_v${GODOT_VERSION}_linux.x86_64" godot
+          chmod +x godot
+          ./godot --version
+
+      - name: Projekt importieren
+        if: steps.guard.outputs.present == 'true'
+        run: |
+          set -o pipefail
+          ./godot --headless --path . --import 2>&1 | tee import.log || true
+
+      - name: Validieren (keine Script-/Parse-Fehler)
+        if: steps.guard.outputs.present == 'true'
+        run: |
+          set -o pipefail
+          ./godot --headless --path . --quit-after 3 2>&1 | tee run.log || true
+          if grep -Eq "SCRIPT ERROR|Parse Error|ERROR: .*\.gd|Failed to load script" run.log import.log; then
+            echo "::error::Godot meldet Script-/Parse-Fehler — siehe Logs oben."
+            exit 1
+          fi
+          echo "Validierung bestanden."
