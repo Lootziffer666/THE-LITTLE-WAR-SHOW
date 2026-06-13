@@ -1,6 +1,6 @@
 # Agent-Briefing — wie ein LLM für dieses Projekt optimal angeleitet wird
 
-**Zweck:** Damit jeder Entwicklungsschritt unabhängig vom Tagesform-Modell die gleiche hohe Latte trifft. Dieses Dokument erklärt die Brief-Prinzipien; der wiederverwendbare Skill `.claude/skills/brief-fable/SKILL.md` erzeugt daraus den konkreten Prompt pro Schritt.
+**Zweck:** Damit jeder Entwicklungsschritt unabhängig vom Tagesform-Modell die gleiche hohe Latte trifft. Dieses Dokument erklärt die Brief-Prinzipien; der wiederverwendbare Skill `.claude/skills/brief-frontier-agent/SKILL.md` erzeugt daraus den konkreten Prompt pro Schritt.
 
 > Hintergrund für den Auftraggeber: „Briefing" = die Anweisung, die du (oder ich) einem KI-Agenten gibst, bevor er einen Schritt umsetzt. Ein guter Brief entscheidet über 80 % des Ergebnisses. Du musst das nicht selbst schreiben — die Schritt-Skills enthalten je einen fertigen, einfügbaren Brief.
 
@@ -14,9 +14,10 @@
 5. **Anti-Patterns explizit verbieten.** Sag, was NICHT passieren darf (kein HUD, keine Map, kein Splatter an Kindern, keine große `.tscn` von Hand, keine 3.x-API). Modelle vermeiden Fehler zuverlässiger, wenn sie benannt sind.
 6. **Evidence verlangen.** Der Brief endet mit: „Zeige, wie du es geprüft hast (statisch + was auf Windows sichtbar sein muss), und schreibe `docs/PROGRESS.md` fort."
 
-## 2. Modellbewusst briefen
-- **Fable 5 (Mythos-Klasse, höchste Fähigkeit):** Verträgt — und belohnt — **dichten, vollständigen Kontext** und mehrschrittiges Denken. Gib ihm das ganze „Warum" (die Zielwirkung der Szene, der Ton), nicht nur das „Was". Du darfst ihm Urteilsspielraum lassen („wähle sinnvolle Startwerte und mache sie als `@export` tunebar"), aber **die Sicherheitsregeln und das Aufbau-in-Code-Muster bleiben nicht verhandelbar** und werden wörtlich mitgegeben. Fable 5 ist stark im selbstständigen Verifizieren — fordere aktiv Selbst-Review (`/code-review`) und API-Gegenprüfung (Context7) ein.
-- **Andere Claude-Modelle (Opus/Sonnet/Haiku 4.x):** Gleicher Brief, aber **kleinere Schritte** und **expliziter** in den Akzeptanzkriterien; weniger offener Urteilsspielraum, mehr konkrete Werte vorgeben. Bei Haiku zusätzlich die Anzahl gleichzeitiger Belange minimieren.
+## 2. Capability-bewusst briefen
+- **Frontier-/Top-tier Coding-Agent:** Verträgt — und belohnt — **dichten, vollständigen Kontext** und mehrschrittiges Denken. Gib ihm das ganze „Warum" (die Zielwirkung der Szene, der Ton), nicht nur das „Was". Urteilsspielraum ist erlaubt („wähle sinnvolle Startwerte und mache sie als `@export` tunebar"), aber **die Sicherheitsregeln und das Aufbau-in-Code-Muster bleiben nicht verhandelbar** und werden wörtlich mitgegeben. Selbst-Review (`/code-review`) und API-Gegenprüfung (Context7) aktiv einfordern.
+- **Standard Coding-Agent:** Gleicher Brief, aber **kleinere Schritte** und **expliziter** in den Akzeptanzkriterien; weniger offener Urteilsspielraum, mehr konkrete Werte vorgeben.
+- **Small-/Fast-Agent:** Zusätzlich Belange minimieren, jeden Akzeptanzpunkt einzeln benennen und keine impliziten Architekturentscheidungen erwarten.
 - **Universell:** Immer die gepinnte Godot-Version nennen; nie annehmen, das Modell „kennt" die aktuelle API — auf Context7-Gegenprüfung bestehen.
 
 ## 3. Anti-Patterns, die jeder Brief verbietet
