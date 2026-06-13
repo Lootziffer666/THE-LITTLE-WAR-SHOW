@@ -18,7 +18,7 @@ Lebendes Log. **Pro Schritt fortschreiben:** Status, was statisch geprüft wurde
 | # | Schritt | Status | Statisch geprüft | CI | Windows-Evidence |
 |---|---|---|---|---|---|
 | 00 | project-scaffold | 🟢 | project.godot/Main.tscn/Stub geparst; Assets nach assets/sprites umgezogen | grün (Run #14) | offen (auf Windows) |
-| 01 | stage-diorama | 🟢 | StageBootstrap baut World/Floor/Backdrop/Proscenium/FliesBar; Tab-Einrückung sauber | grün (Run #20) | offen (auf Windows) |
+| 01 | stage-diorama | 🟢 | World/Floor/Apron/Backdrop/Proscenium/FliesBar; kohärenter Rahmen, erhöhte Bühne, DRY-Helfer; §12-Namen geprüft | grün (Run #24) | offen (auf Windows) |
 | 02 | camera-light-environment | ⬜ | – | – | – |
 | 03 | performer | ⬜ | – | – | – |
 | 04 | puppet-and-strings | ⬜ | – | – | – |
