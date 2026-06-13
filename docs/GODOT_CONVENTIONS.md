@@ -49,7 +49,8 @@ Konzept-Bibel §4: *3D ist Körper, 2D ist Rolle.* Mechanisch umgesetzt über zw
 Allein die **Schatten-Asymmetrie** kommuniziert die Sicherheitsregel, bevor ein Wort fällt.
 
 ## 7. HD-2D-Billboarding (recherche-gehärtet)
-- **Knoten:** `Sprite3D` für beide Figuren (Idle reicht in M1; später `AnimatedSprite3D`).
+- **Knoten:** `AnimatedSprite3D` für beide Figuren in M1 (echte Freisteller, animiert — s. `docs/SPRITE_PIPELINE.md`). `SpriteFrames` werden **in Code** aus `assets/sprites/{girl,puppet1}/` über `scripts/SpriteLibrary.gd` gebaut. Material-/Billboard-/Schatten-Verträge (§6) gelten unverändert pro Figur.
+- **Sprite-Import:** PNGs unter `assets/sprites/` importieren mit **Filter An, Mipmaps An, Fix Alpha Border An** (kein `.gdignore` hier). Raue KI-Freisteller-Kanten werden über **Alpha-Scissor** (§6/§8) hart geschnitten — kein Fransen-Halo.
 - **Performer:** `billboard = BILLBOARD_Y` (giert zur Kamera, kippt nie), beleuchtet, `cast_shadow = ON`.
 - **Puppe:** `billboard = DISABLED` (maximal „steifes flaches Pappteil"), unshaded, `cast_shadow = OFF`.
 - **Boden-Kontakt (wichtig für Qualität):** Reines Y-Billboard kann am schrägen Diorama-Winkel vom Boden „abheben" oder in Geometrie clippen. Bewährter Fix: ein **Billboard-Shader mit Tiefen-Offset** (Vertex schiebt den Sprite um wenige Welt-Einheiten Richtung Kamera) ODER sorgfältig getunter Fuß-Pivot + `pixel_size`. **Step 03 implementiert und verifiziert den Boden-Kontakt explizit** (Füße berühren den Boden, Schatten entsteht am Kontaktpunkt). Referenz-Technik: godotshaders.com „Depth adjustment for Clipping protection".

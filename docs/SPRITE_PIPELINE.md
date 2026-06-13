@@ -1,18 +1,69 @@
-# Sprite-Pipeline — von Referenz zu sauberem Asset
+# Sprite-Pipeline — von Referenz zu Asset
 
-## Warum dieser Umweg
-Die vier Referenz-PNGs in `/reference` sind **Art-Direction**, keine fertigen Assets: painterly gerendert, mit **eingebrannten deutschen/englischen Beschriftungen** und **uneinheitlichem Raster**. Sie lassen sich **nicht** sauber per `region_rect` zerschneiden, und eingebrannter Militär-Beschriftungstext im Spiel wäre zudem ein Ton-Problem. Außerdem fehlen im Build-Container Bildwerkzeuge (kein PIL/ImageMagick).
+## Stand (geändert): echte Freisteller ab M1
+Der Auftraggeber hat die vier Referenz-Sheets per KI **grob freigestellt** und als einzelne
+Pose-PNGs geliefert. Diese liegen importierbar unter `assets/sprites/` (Umzug aus dem
+ursprünglichen `Sprites/`-Ordner). Damit nutzt **bereits M1 die echte Optik** statt der
+ursprünglich geplanten rein prozeduralen Platzhalter.
 
-**Deshalb in M1: prozedurale Platzhalter** (in `scripts/PlaceholderTextures.gd` zur Laufzeit erzeugt) — silhouetten- und palettenkorrekt, transparenter Hintergrund, sofortiger Performer-vs-Puppe-Kontrast, null Import-Risiko.
+```
+assets/sprites/girl/    35 Posen  (deutsch benannt)  → M1-Darsteller (steuerbar)
+assets/sprites/puppet1/ 35 Posen  (gleiches Schema)  → M1-Puppe (zerlegbar)
+assets/sprites/boy/     27 Posen  (englisch benannt)  → reserviert für M2
+```
 
-## Der saubere Pfad (M3, auf Windows mit Bildwerkzeugen)
-1. **Ein sauberes Standbild pro Figur** aus dem jeweiligen Sheet zuschneiden (z. B. „Idle/Haltung Frame 1"), **Beschriftungstext entfernen**, als enges **transparentes PNG** exportieren: `assets/sprites/performer_idle.png`, `assets/sprites/puppet_idle.png`. (Editor wie Krita/Photoshop, oder kleines Python+PIL-Skript.)
-2. In Godot importieren mit **Filter: An**, **Mipmaps: An**, **Fix Alpha Border: An**; die erzeugte `.import`-Datei committen.
-3. In `Performer.gd`/`Puppet.gd` **eine Zeile** tauschen: `PlaceholderTextures.performer_tex()` → `load("res://assets/sprites/performer_idle.png")`. (Die Platzhalter-Quelle ist zentralisiert, damit genau dieser Einzeiler reicht.)
-4. **Später (Animation):** die vollen, uneinheitlichen Sheets in Einzel-Posen schneiden → `SpriteFrames` → `AnimatedSprite3D` (Performer: Idle/Walk flüssig; Puppe: steifes Idle/Zittern). Herkunft (Perchance-Seed/Prompt, Mixamo-Clip) je Asset dokumentieren — Production-Pipeline §5/§9.
+Eigenschaften: einzeln freigestellt, transparent, je ~15–75 KB. Die Freistellung ist
+**bewusst grob** (raue Kanten, evtl. Halo). Das ist für M1 akzeptabel und wird kaschiert
+(s. u.); der saubere Cleanup ist M3.
 
-## Qualitäts-Regeln für echte Sprites
+## Wie die groben Kanten in M1 sauber wirken
+- **Alpha-Scissor** (`ALPHA_CUT_DISCARD`, Schwelle ~0.5) auf beiden Figuren-Materialien
+  (Konventionen §6/§8): harte Cutout-Kante, kein halbtransparenter Fransen-Halo, korrektes
+  Tiefen-Sorting. Genau dafür ist Scissor ideal bei rauen Freistellern.
+- **Import:** Filter **An**, Mipmaps **An**, Fix Alpha Border **An** (verhindert dunklen Rand
+  an der Alpha-Kante). Kein `.gdignore` auf `assets/sprites/` — diese PNGs **sollen** importiert werden.
+- **Linear-Filter + Mipmaps** (painterly, nicht Pixel-Art) gegen Diorama-Flimmern.
+
+## Animation in M1 (SpriteFrames in Code)
+`scripts/SpriteLibrary.gd` baut **zur Laufzeit** `SpriteFrames` aus den semantisch benannten
+Dateien (Aufbau-in-Code-Vertrag, Konventionen §3). M1-Auswahl pro Figur:
+
+| Figur | Animation | Quell-Frames |
+|---|---|---|
+| girl (Darsteller) | `idle` | `03_haltung_ausruhen` (+ dezentes Wippen) |
+| girl | `walk` | `04…08_geh_zyklus` (5) |
+| girl | `run` | `09…13_lauf_zyklus` (5) |
+| girl | `play_dead` (Tot-Spielen) | `34_gefallen` |
+| girl | `react_splatter` | `31_schock` → `33_trauer`/`30_wut` → zurück |
+| girl | `stumble` | `35_panik` / `31_schock` |
+| puppet1 (Puppe) | `idle_stiff` (gestuft) | `01_waffenhaltung_01` (+ `03_haltung_ausruhen`) |
+| puppet1 | `dismantle` | `31_schock` → `32_verwundet` → `34_gefallen` |
+
+Combat-Posen (`feuer_*`, `granatenwurf_*`, `zielen_*`) bleiben in M1 **ungenutzt** — sie
+gehören zur „Krieg spielen"-Mechanik (M2). `boy` wird in M2 ergänzt.
+
+## Sicherheits-Leitplanke (verbindlich, `docs/TONE.md` §0)
+Die Pose-Namen enthalten Kampf-/Schadensbegriffe (`damage`, `death`, `verwundet`,
+`gefallen`). Beim **Darsteller** (girl/boy) werden Frames wie `34_gefallen`/`32_verwundet`
+**ausschließlich als theatralisches Tot-Spielen / Slapstick** verwendet — rein kosmetisch,
+mit Auto-Recovery, **nie** als Gewaltopfer-/Kriegsopfer-Ästhetik. Für **puppet1** bedeuten
+dieselben Frames reale Zerlegung (erlaubt). Beim Einbinden **visuell prüfen**: kein
+eingebrannter Beschriftungstext, kein blut-realistischer Look — sonst Frame maskieren/ersetzen.
+
+## Prozedurale Platzhalter — nur noch Fallback
+`scripts/PlaceholderTextures.gd` bleibt für (a) fehlende Assets und (b) Dinge **ohne** echtes
+Asset: das **Filzherz** (Prop-UI, Schritt 07) und die **Projektor-Folie** (Schritt 08, via `Label3D`).
+
+## Sauberer Pfad (M3, auf Windows mit Bildwerkzeugen)
+1. Pro genutzter Pose die **Kante sauber** nachziehen (Halo entfernen, knapper transparenter
+   Beschnitt, konsistente Fußlinie), evtl. Restbeschriftung entfernen.
+2. **Namens-Normalisierung** (boy englisch ↔ girl/puppet deutsch) auf ein gemeinsames Schema.
+3. Re-Import (Filter/Mipmaps/Fix-Alpha-Border An), `.import` committen; Herkunft je Asset
+   dokumentieren (Production-Pipeline §5/§9).
+4. Volle Animations-Sets (auch Combat) für die jeweilige Nummer freischalten.
+
+## Qualitäts-Regeln für Sprites
 - Painterly, **nicht** Pixel-Art → Linear-Filter + Mipmaps (Konventionen §7).
-- Transparenter, knapper Beschnitt; konsistente Fußlinie (Pivot unten).
-- Performer: lesbar als Kind/Mensch, flüssig animierbar. Puppe: erkennbar **Cutout** mit Gelenk-Lücken, bewusst steif. Der Kontrast ist Pflicht, nicht Stil.
+- Darsteller: lesbar als Kind/Mensch, beleuchtet, wirft Schatten. Puppe: flacher **Cutout**,
+  unshaded, kein Schatten, an Schnüren, bewusst steif. Der Kontrast ist Pflicht, nicht Stil.
 - **Niemals** eingebrannten Beschriftungstext im finalen Asset.
