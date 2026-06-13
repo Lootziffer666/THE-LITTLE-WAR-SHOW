@@ -1,0 +1,7 @@
+# Godot 4 — Editor-Cache (nie committen)
+.godot/
+
+# Export-Artefakte
+/build/
+*.exe
+*.pck

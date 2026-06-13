@@ -2,6 +2,12 @@
 
 Diese vier PNGs sind **Art-Direction / richtungsweisende Referenz**, **keine** fertigen Spiel-Assets. Sie werden bewusst **nicht** von Godot importiert (siehe `reference/.gdignore`). Echte Sprites entstehen separat — siehe `docs/SPRITE_PIPELINE.md`.
 
+> **Hinweis (geändert):** Aus diesen Sheets wurden bereits **grob freigestellte Pose-PNGs**
+> extrahiert. Sie liegen importierbar unter `assets/sprites/{girl,puppet1,boy}/` und sind die
+> **real genutzten (groben) Assets ab M1** (girl = Darsteller, puppet1 = Puppe, boy = M2).
+> Die vier Sheets hier bleiben reine **Look-/Bewegungs-Referenz**. Der saubere Kanten-/Namens-
+> Cleanup der Freisteller ist M3 (`docs/SPRITE_PIPELINE.md`).
+
 Eigenschaften aller vier: ~843×1264 px, PNG, painterly gerendert, mit **eingebrannten deutschen/englischen Beschriftungen** und **uneinheitlichem Posen-Raster** → nicht sauber slice-bar.
 
 | Datei | Inhalt | Rolle im Spiel |

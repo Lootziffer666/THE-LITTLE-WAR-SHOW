@@ -6,7 +6,7 @@ name: Godot Validate
 
 on:
   push:
-    branches: [ "claude/practical-lovelace-vz59lr", "main" ]
+    branches: [ "claude/**", "main" ]
   pull_request:
   workflow_dispatch:
 
