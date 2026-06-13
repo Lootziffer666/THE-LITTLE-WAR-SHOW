@@ -19,7 +19,7 @@ Lebendes Log. **Pro Schritt fortschreiben:** Status, was statisch geprüft wurde
 |---|---|---|---|---|---|
 | 00 | project-scaffold | 🟢 | project.godot/Main.tscn/Stub geparst; Assets nach assets/sprites umgezogen | grün (Run #14) | offen (auf Windows) |
 | 01 | stage-diorama | 🟢 | World/Floor/Apron/Backdrop/Proscenium/FliesBar; kohärenter Rahmen, erhöhte Bühne, DRY-Helfer; §12-Namen geprüft | grün (Run #24) | offen (auf Windows) |
-| 02 | camera-light-environment | ⬜ | – | – | – |
+| 02 | camera-light-environment | 🟢 | Lighting(KeySpot+Schatten/WarmFill/Footlights+Birnen)/WorldEnvironment(Glow/Filmic/Adjustments)/StageCamera+DoF; APIs durch reale _ready()-Ausführung bestätigt | grün (Run #26) | offen (auf Windows) |
 | 03 | performer | ⬜ | – | – | – |
 | 04 | puppet-and-strings | ⬜ | – | – | – |
 | 05 | dismantle-and-ketchup | ⬜ | – | – | – |
