@@ -1,0 +1,13 @@
+body {
+  margin: 0;
+  display: grid;
+}
+
+label {
+  font-family: courier;
+  font-size: 25px;
+  font-weight: bold;
+  position: absolute;
+  align-self: end;
+  margin: 10px;
+}

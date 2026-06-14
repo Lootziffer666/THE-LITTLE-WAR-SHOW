@@ -1,0 +1,89 @@
+<a href='https://github.com/ycw/omega' target='_top'>114.</a>
+<script async src="https://ga.jspm.io/npm:es-module-shims@1.4.3/dist/es-module-shims.js" crossorigin="anonymous"></script>
+<script type='importmap-shim'>
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.137.5/build/three.module.js",
+      "three/": "https://unpkg.com/three@0.137.5/",
+      "omega/": "https://cdn.jsdelivr.net/gh/ycw/omega@0.0.2/"
+    }
+  }
+</script>
+<script defer type='module-shim'>
+import * as THREE from 'three'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js'
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js'
+import { Curves } from 'three/examples/jsm/curves/CurveExtras.js'
+import { Strip, StripGeometry, UvPreset } from 'omega/dist/Strip.js'
+import { DualBloomPass } from 'omega/dist/DualBloom.js'
+import { RadialBlurPass } from 'omega/dist/RadialBlur.js'
+
+// ----
+// main
+// ----
+
+const renderer = new THREE.WebGLRenderer();
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(75, 2, .1, 100);
+
+scene.add(new THREE.HemisphereLight('gold', 'blue'));
+scene.add(new THREE.AmbientLight('green'));
+
+const segments = 2000;
+const curve = new Curves.TorusKnot();
+const radius = (i, I) => 2 * Math.abs(i / I - 0.5) * 10 + 1;
+const strip = new Strip(curve, radius, 0);
+const frames = (() => {
+  const _frames = strip.computeFrames(segments); // [B,N,T,O][]
+  const n0 = _frames[0][1]; // first normal
+  const n1 = _frames[_frames.length - 1][1]; // last normal
+  const da = n0.angleTo(n1); // delta angle 
+  strip.tilt = (i, I) => i / I * -da; // update strip
+  return strip.computeFrames(segments); // new frames
+})();
+
+const geom = new StripGeometry(strip, segments, UvPreset.strip[1]);
+const map = new THREE.TextureLoader().load('https://cdn.jsdelivr.net/gh/ycw/omega@0.0.0/logo.png');
+map.repeat.set(segments / 100, 2); // stretch up
+map.wrapT = map.wrapS = THREE.RepeatWrapping;
+const mat = new THREE.MeshLambertMaterial({ map, side: THREE.DoubleSide });
+const mesh = new THREE.Mesh(geom, mat);
+scene.add(mesh);
+
+// ----
+// render
+// ----
+
+const composer = new EffectComposer(renderer);
+composer.addPass(new RenderPass(scene, camera));
+composer.addPass(new DualBloomPass({ intensity: .5, threshold: .1, blurriness: .4 }));
+composer.addPass(new RadialBlurPass({ intensity: 0.1, iterations: 20 }));
+
+const spd = (0.04) / 1e3; // ratio per ms
+camera.matrixAutoUpdate = false;
+renderer.setAnimationLoop((t) => {
+  const ratio = spd * t % 1;
+  const [B, N, T] = frames[ratio * segments | 0];
+  const P = curve.getPointAt(ratio).add(N.clone().multiplyScalar(2));
+  camera.matrix.makeBasis(B, N, T).setPosition(P);
+  camera.matrixWorldNeedsUpdate = true;
+  composer.render();
+});
+
+// ----
+// view
+// ----
+
+function resize(w, h, dpr = devicePixelRatio) {
+  renderer.setPixelRatio(dpr);
+  renderer.setSize(w, h, false);
+  composer.setPixelRatio(dpr);
+  composer.setSize(w, h);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+addEventListener('resize', () => resize(innerWidth, innerHeight));
+dispatchEvent(new Event('resize'));
+document.body.prepend(renderer.domElement);
+</script>
