@@ -135,7 +135,7 @@ export function Atmosphere() {
     const mode = useTheaterStore.getState().lightMode
     const dustTarget = mode === 'house' ? 0.02 : mode === 'show' ? 0.05 : 0.04
     opacity.value = lerp(opacity.value, dustTarget, 0.05)
-    showOp.current.value = lerp(showOp.current.value, mode === 'show' ? 0.13 : 0.0, 0.05)
+    showOp.current.value = lerp(showOp.current.value, mode === 'show' ? 0.07 : 0.0, 0.05)
     moonOp.current.value = lerp(moonOp.current.value, mode === 'dark' ? 0.1 : mode === 'house' ? 0.025 : 0.05, 0.05)
   })
 

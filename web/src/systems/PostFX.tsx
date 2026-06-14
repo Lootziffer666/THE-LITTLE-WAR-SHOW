@@ -52,7 +52,7 @@ export function PostFX() {
     // warm grade + gentle saturation lift
     const lum = dot(outp, vec3(0.2126, 0.7152, 0.0722))
     outp = mix(vec3(lum), outp, u.sat)
-    outp = outp.mul(vec3(1.05, 1.0, 0.92))
+    outp = outp.mul(vec3(1.08, 1.0, 0.88))
 
     // soft vignette
     const d = screenUV.sub(0.5)
