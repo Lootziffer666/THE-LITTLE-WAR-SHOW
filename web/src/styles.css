@@ -197,3 +197,23 @@ canvas {
   color: var(--hud-red);
   font-size: 0.8rem;
 }
+
+.warnbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  padding: 0.5rem 1rem;
+  background: rgba(120, 80, 20, 0.9);
+  color: #fff3e0;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-align: center;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+}
+.warnbar code {
+  color: #ffd9a8;
+  opacity: 0.85;
+}

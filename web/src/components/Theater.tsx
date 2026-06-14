@@ -9,9 +9,12 @@ import { Stage } from './shell/Stage'
 import { Proscenium } from './shell/Proscenium'
 import { Curtain } from './shell/Curtain'
 import { StageProps } from './shell/StageProps'
+import { OrchestraPit } from './shell/OrchestraPit'
+import { HouseDetails } from './house/HouseDetails'
 import { Seating } from './seating/Seating'
 import { Foyer } from './foyer/Foyer'
 import { Backstage } from './backstage/Backstage'
+import { Crossover } from './backstage/Crossover'
 import { ControlBooth } from './backstage/ControlBooth'
 import { Dressing } from './dressing/Dressing'
 import { Storytelling } from './story/Storytelling'
@@ -27,11 +30,14 @@ export function Theater() {
       <Proscenium />
       <Curtain />
       <StageProps />
+      <OrchestraPit />
+      <HouseDetails />
 
       {/* --- dressed modules --- */}
       <Seating />
       <Foyer />
       <Backstage />
+      <Crossover />
       <ControlBooth />
       <Dressing />
       <Storytelling />

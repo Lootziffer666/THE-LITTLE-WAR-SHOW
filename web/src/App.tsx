@@ -4,7 +4,7 @@
  * overlays (boot veil + director HUD). If no GPU backend can start, we show an
  * honest fatal message instead of a black screen.
  */
-import { Suspense, useState } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { createRenderer, isWebGPUBackend } from './r3f-webgpu'
 import { CAMERA } from './config/theater.config'
@@ -19,7 +19,14 @@ import { useTheaterStore } from './state/useTheaterStore'
 
 export function App() {
   const [fatal, setFatal] = useState<string | null>(null)
+  const [warn, setWarn] = useState<string | null>(null)
   const setBackend = useTheaterStore((s) => s.setBackend)
+
+  useEffect(() => {
+    const onWarn = (e: Event) => setWarn((e as CustomEvent).detail ?? 'post-processing disabled')
+    window.addEventListener('theater-warning', onWarn)
+    return () => window.removeEventListener('theater-warning', onWarn)
+  }, [])
 
   return (
     <>
@@ -53,6 +60,12 @@ export function App() {
 
       <Loader />
       {!fatal && <DirectorHUD />}
+
+      {warn && (
+        <div className="warnbar" onClick={() => setWarn(null)} role="button">
+          Post-processing fell back to a plain render — tap to dismiss. <code>{warn}</code>
+        </div>
+      )}
 
       {fatal && (
         <div className="fatal">
