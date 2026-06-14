@@ -4,7 +4,7 @@
  * overlays (boot veil + director HUD). If no GPU backend can start, we show an
  * honest fatal message instead of a black screen.
  */
-import { Suspense, useEffect, useState } from 'react'
+import { Suspense, useEffect, useMemo, useState } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { createRenderer, isWebGPUBackend } from './r3f-webgpu'
 import { CAMERA } from './config/theater.config'
@@ -17,10 +17,16 @@ import { DirectorHUD } from './ui/DirectorHUD'
 import { Loader } from './ui/Loader'
 import { useTheaterStore } from './state/useTheaterStore'
 
+function urlHasFlag(name: string): boolean {
+  if (typeof window === 'undefined') return false
+  return new URLSearchParams(window.location.search).has(name)
+}
+
 export function App() {
   const [fatal, setFatal] = useState<string | null>(null)
   const [warn, setWarn] = useState<string | null>(null)
   const setBackend = useTheaterStore((s) => s.setBackend)
+  const postEnabled = useMemo(() => urlHasFlag('post'), [])
 
   useEffect(() => {
     const onWarn = (e: Event) => setWarn((e as CustomEvent).detail ?? 'post-processing disabled')
@@ -55,11 +61,17 @@ export function App() {
         <Lighting />
         <Atmosphere />
         <Controls />
-        <PostFX />
+        {postEnabled && <PostFX />}
       </Canvas>
 
       <Loader />
       {!fatal && <DirectorHUD />}
+
+      {!postEnabled && !fatal && (
+        <div className="warnbar" role="status">
+          Safe preview: WebGL + plain render. Add <code>?post=1</code> for post FX, <code>?webgpu=1</code> for WebGPU.
+        </div>
+      )}
 
       {warn && (
         <div className="warnbar" onClick={() => setWarn(null)} role="button">
