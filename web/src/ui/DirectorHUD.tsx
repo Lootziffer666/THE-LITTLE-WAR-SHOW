@@ -24,7 +24,7 @@ function HelpOverlay({ onClose }: { onClose: () => void }) {
           <b>L</b> — cycle lighting · <b>C</b> — curtain · <b>F</b> — flicker
         </div>
         <div>
-          <b>Space</b> — fire pyro · <b>R</b> — reset stage props
+          <b>Space</b> — fire pyro · <b>R</b> — reset props · <b>P</b> — post-processing on/off
         </div>
         <div>
           <b>drag</b> — orbit · <b>scroll</b> — dolly · <b>H</b> — close this
@@ -42,6 +42,8 @@ export function DirectorHUD() {
   const toggleCurtain = useTheaterStore((s) => s.toggleCurtain)
   const flicker = useTheaterStore((s) => s.flicker)
   const toggleFlicker = useTheaterStore((s) => s.toggleFlicker)
+  const usePost = useTheaterStore((s) => s.usePost)
+  const togglePost = useTheaterStore((s) => s.togglePost)
   const firePyro = useTheaterStore((s) => s.firePyro)
   const backend = useTheaterStore((s) => s.backend)
   const showHelp = useTheaterStore((s) => s.showHelp)
@@ -78,6 +80,9 @@ export function DirectorHUD() {
         <div className="hud__group">
           <button className="hud__btn" data-active={flicker} onClick={toggleFlicker}>
             Flicker
+          </button>
+          <button className="hud__btn" data-active={usePost} onClick={togglePost}>
+            FX
           </button>
           <button className="hud__btn" style={{ color: 'var(--hud-red)' }} onClick={() => firePyro()}>
             Pyro!

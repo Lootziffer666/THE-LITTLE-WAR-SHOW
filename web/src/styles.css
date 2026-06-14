@@ -217,3 +217,23 @@ canvas {
   color: #ffd9a8;
   opacity: 0.85;
 }
+
+.diag {
+  position: fixed;
+  left: 50%;
+  bottom: 4.6rem;
+  transform: translateX(-50%);
+  z-index: 25;
+  font: 600 0.62rem ui-monospace, "SF Mono", Menlo, monospace;
+  letter-spacing: 0.08em;
+  color: var(--hud-dim);
+  background: rgba(14, 10, 9, 0.55);
+  border: 1px solid var(--hud-border);
+  border-radius: 0.4rem;
+  padding: 0.2rem 0.55rem;
+  pointer-events: none;
+  white-space: nowrap;
+  max-width: 92vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

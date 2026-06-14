@@ -80,48 +80,68 @@ export function PostFX() {
     if (built && size) (built.post as unknown as { setSize?: (w: number, h: number) => void }).setSize?.(size.width, size.height)
   }, [built, size])
 
-  // We own the render loop (priority 1). It is fail-safe: if the TSL pipeline
-  // ever throws (e.g. a WGSL compile edge case), we fall back to a plain render
-  // so the scene still shows, and surface the message once instead of a black
-  // screen — invaluable while iterating without a live viewport.
+  // We own the render loop (priority 1). WebGPU rendering is ASYNCHRONOUS, so we
+  // drive renderAsync() and route any async rejection to the warning banner.
+  // On failure — or when post is toggled off (key P) — we fall back to a plain
+  // scene render so the canvas is never silently black. A live #diag readout
+  // reports backend / frame / mode / last error so issues are visible.
   const failed = useRef(false)
+  const frame = useRef(0)
+  const lastErr = useRef<string | null>(null)
+
+  const onErr = (e: unknown) => {
+    const msg = e instanceof Error ? e.message : String(e)
+    lastErr.current = msg
+    if (!failed.current) {
+      failed.current = true
+      window.dispatchEvent(new CustomEvent('theater-warning', { detail: msg }))
+    }
+  }
+
   useFrame(() => {
-    const markReady = () => {
-      if (!firedReady.current) {
-        firedReady.current = true
-        window.dispatchEvent(new CustomEvent('theater-ready'))
-      }
-    }
-    const renderPlain = () => {
-      try {
-        ;(gl as unknown as { render: (s: unknown, c: unknown) => void }).render(scene, camera)
-      } catch {
-        /* nothing more we can do */
-      }
-    }
+    frame.current++
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const r = gl as any
+    const st = useTheaterStore.getState()
 
-    if (!built || failed.current) {
-      renderPlain()
-      markReady()
-      return
-    }
-
-    try {
-      const pr = LIGHT_PRESETS[useTheaterStore.getState().lightMode]
+    const present = (): unknown => {
+      if (!built || failed.current || !st.usePost) {
+        return r.renderAsync ? r.renderAsync(scene, camera) : r.render(scene, camera)
+      }
+      const pr = LIGHT_PRESETS[st.lightMode]
       const b = built.bloomNode
       b.strength.value += (pr.bloomStrength - b.strength.value) * 0.06
       b.threshold.value += (pr.bloomThreshold - b.threshold.value) * 0.06
-      const r = gl as unknown as { toneMappingExposure: number }
-      if (r) r.toneMappingExposure += (pr.exposure * 1.05 - r.toneMappingExposure) * 0.06
-      built.post.render()
-    } catch (e) {
-      failed.current = true
-      window.dispatchEvent(
-        new CustomEvent('theater-warning', { detail: e instanceof Error ? e.message : String(e) }),
-      )
-      renderPlain()
+      if (typeof r.toneMappingExposure === 'number') r.toneMappingExposure += (pr.exposure * 1.05 - r.toneMappingExposure) * 0.06
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const p = built.post as any
+      return p.renderAsync ? p.renderAsync() : p.render()
     }
-    markReady()
+
+    try {
+      const ret = present()
+      if (ret && typeof (ret as { then?: unknown }).then === 'function') {
+        ;(ret as Promise<unknown>).catch(onErr)
+      }
+    } catch (e) {
+      onErr(e)
+      try {
+        if (r.renderAsync) r.renderAsync(scene, camera)
+        else r.render(scene, camera)
+      } catch {
+        /* */
+      }
+    }
+
+    if (frame.current === 1) window.dispatchEvent(new CustomEvent('theater-ready'))
+    if (frame.current % 15 === 0) {
+      const el = document.getElementById('diag')
+      if (el) {
+        const be = r?.backend?.isWebGPUBackend ? 'WebGPU' : r?.backend ? 'WebGL2' : '—'
+        const mode = !built || failed.current ? 'plain' : !st.usePost ? 'plain(off)' : 'post'
+        el.textContent = `${be} · f${frame.current} · ${mode}${lastErr.current ? ' · ERR ' + lastErr.current : ''}`
+      }
+    }
   }, 1)
 
   return null

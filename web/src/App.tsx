@@ -67,6 +67,8 @@ export function App() {
       </Canvas>
 
       <Loader />
+      {/* live render diagnostics (PostFX writes here every ~15 frames) */}
+      <div id="diag" className="diag" />
       {!fatal && <DirectorHUD />}
 
       {!postEnabled && !fatal && (

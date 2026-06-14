@@ -31,6 +31,9 @@ export function Controls() {
         case 'f':
           s.toggleFlicker()
           break
+        case 'p':
+          s.togglePost()
+          break
         case 'r':
           s.resetProps()
           break
