@@ -53,3 +53,30 @@ src/
 
 Surfaces all read from `materials/` and coordinates from `config/`, so the
 building stays one coherent place. See each module's header comment for intent.
+
+## Status
+
+Implemented and building green (`npm run build`, tsc + vite):
+
+- **Shell** — auditorium, raised stage, gilded proscenium + footlights, spring
+  curtain, console-controllable stage props.
+- **Seating** — instanced raked velour rows; some seats stuck half-up / down.
+- **Foyer** — box office, chrome-and-cherry snack bar with glowing popcorn,
+  neon, glass storefront onto a dusk small-town street (buildings, car, lamp).
+- **Backstage** — wings, storage with dust-sheeted scenery, staff/dressing room,
+  office, tiled restroom with a flickering tube.
+- **Dressing** — posters, cobwebs, scuttling mice/roaches, spiders, trash beside
+  the bins, grime in the corners, forgotten props, easter eggs.
+- **Console + pyro** — clickable lighting desk (lights/curtain/prop-nudge/
+  flicker/pyro) and GPU spark bursts.
+- **Systems** — 3-state lighting + flicker, volumetric dust + light shafts,
+  cinematic post (bloom, tilt-shift DoF, grade, grain, vignette).
+
+### Known limitations (honest)
+
+- **Not visually verified in a browser** — built in a headless environment, so
+  the gate is a green typecheck + production bundle, not a rendered frame.
+  Please run `npm run dev` (WebGPU browser) to confirm and to taste-tune.
+- **Lighting photometry & DoF focus are tuned blind** — the three states are
+  clearly distinct, but exact intensities/focus likely want an eye.
+- Bundle is ~1.9 MB (three + WebGPU); fine for a 3D app, could be split later.
