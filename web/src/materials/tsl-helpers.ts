@@ -27,11 +27,18 @@ import {
 export type TNode = any
 
 const colorCache = new Map<string, THREE.Color>()
-/** Cached, color-managed THREE.Color from an sRGB hex string. */
+/** Cached, color-managed THREE.Color from an sRGB hex — with a stylised
+ *  saturation lift so the whole palette reads painterly, not photographic. */
 export function c(hex: string): THREE.Color {
   let col = colorCache.get(hex)
   if (!col) {
     col = new THREE.Color(hex)
+    // boost saturation in linear space (push each channel away from luma)
+    const lum = col.r * 0.2126 + col.g * 0.7152 + col.b * 0.0722
+    const k = 1.34
+    col.r = Math.min(1, Math.max(0, lum + (col.r - lum) * k))
+    col.g = Math.min(1, Math.max(0, lum + (col.g - lum) * k))
+    col.b = Math.min(1, Math.max(0, lum + (col.b - lum) * k))
     colorCache.set(hex, col)
   }
   return col
@@ -70,4 +77,13 @@ export function facingRatio(): TNode {
 /** Grazing-angle fresnel term in [0,1] (≈0 face-on, ≈1 at the silhouette). */
 export function fresnel(power = 2.5): TNode {
   return facingRatio().oneMinus().pow(power)
+}
+
+/**
+ * A warm fresnel RIM as an emissive node — the signature stylised edge-light
+ * that pops silhouettes (Hearthstone/Wayfinder/WoW). Add as `material.emissiveNode`.
+ * Subtle by default; it also feeds bloom for a soft glow when post is on.
+ */
+export function rim(hex = '#ffd9a8', power = 2.6, strength = 0.18): TNode {
+  return cnode(hex).mul(fresnel(power)).mul(strength)
 }

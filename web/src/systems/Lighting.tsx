@@ -86,7 +86,7 @@ export function Lighting() {
 
     // --- real lights ----------------------------------------------------
     if (ambientRef.current) ambientRef.current.intensity = lerp(ambientRef.current.intensity, p.ambient * 3.0, k)
-    if (hemiRef.current) hemiRef.current.intensity = lerp(hemiRef.current.intensity, p.ambient * 1.6, k)
+    if (hemiRef.current) hemiRef.current.intensity = lerp(hemiRef.current.intensity, p.ambient * 2.7, k)
     if (fillRef.current) fillRef.current.intensity = lerp(fillRef.current.intensity, p.fill * 1.6, k)
     if (moonRef.current) moonRef.current.intensity = lerp(moonRef.current.intensity, p.moonThroughGlass * 1.3, k)
     if (keyRef.current) keyRef.current.intensity = lerp(keyRef.current.intensity, p.keySpot * 45 * f.value, k)

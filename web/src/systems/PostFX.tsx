@@ -27,9 +27,9 @@ export function PostFX() {
 
   const u = useMemo(
     () => ({
-      grain: uniform(0.26),
+      grain: uniform(0.22),
       vignette: uniform(1.15),
-      sat: uniform(1.12),
+      sat: uniform(1.22),
     }),
     [],
   )
@@ -52,7 +52,7 @@ export function PostFX() {
     // warm grade + gentle saturation lift
     const lum = dot(outp, vec3(0.2126, 0.7152, 0.0722))
     outp = mix(vec3(lum), outp, u.sat)
-    outp = outp.mul(vec3(1.025, 1.0, 0.965))
+    outp = outp.mul(vec3(1.05, 1.0, 0.92))
 
     // soft vignette
     const d = screenUV.sub(0.5)

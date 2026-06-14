@@ -29,7 +29,7 @@ import {
   bumpMap,
 } from './tsl'
 import { PALETTE } from '../config/theater.config'
-import { c, cnode, fbm, unoise, hash11, hash21, worley, facingRatio, type TNode } from './tsl-helpers'
+import { c, cnode, fbm, unoise, hash11, hash21, worley, facingRatio, rim, type TNode } from './tsl-helpers'
 
 type StdMat = THREE.MeshStandardNodeMaterial
 type PhysMat = THREE.MeshPhysicalNodeMaterial
@@ -94,6 +94,7 @@ export function woodFloorMaterial(opts: { boardWidth?: number; tone?: [string, s
   // height: grain ridges minus the grooves, plus pores
   const height = grain.mul(0.35).add(board.oneMinus().mul(-0.7)).add(pore.mul(0.08))
   m.normalNode = bumpMap(height, float(0.45))
+  m.emissiveNode = rim('#ffcaa0', 3.0, 0.12)
   return m
 }
 
@@ -151,6 +152,7 @@ export function velourMaterial(opts: { color?: string; worn?: number } = {}): Ph
   m.sheenRoughness = 0.55
   m.sheenColor = c('#ff9d86')
   m.normalNode = bumpMap(nap, float(0.16))
+  m.emissiveNode = rim('#ff7a6a', 2.6, 0.2)
   return m
 }
 
@@ -176,6 +178,7 @@ export function curtainVelvetMaterial(opts: { color?: string } = {}): PhysMat {
   m.sheenRoughness = 0.4
   m.sheenColor = c('#c14b3f')
   m.normalNode = bumpMap(sin(lp.x.mul(26.0)).mul(0.5).add(weave.mul(0.2)), float(0.5))
+  m.emissiveNode = rim('#ff5a4a', 2.4, 0.22)
   return m
 }
 
@@ -227,6 +230,7 @@ export function plasterMaterial(opts: { color?: string; grime?: number; cracks?:
   m.metalnessNode = float(0)
   m.roughnessNode = clamp(float(0.85).add(crack.mul(0.1)).sub(rise.mul(0.1)), 0.5, 1)
   m.normalNode = bumpMap(mottle.mul(0.3).add(crack.mul(-0.6)).add(fine.mul(0.1)), float(0.3))
+  m.emissiveNode = rim('#ffe0b0', 2.4, 0.16)
   return m
 }
 
@@ -321,6 +325,7 @@ export function giltMaterial(opts: { tone?: string } = {}): StdMat {
   m.colorNode = col
   m.metalnessNode = clamp(float(0.9).sub(wear.mul(0.5)), 0.2, 1) // grime kills the metalness in the recesses
   m.roughnessNode = clamp(float(0.35).add(wear.mul(0.5)), 0.25, 0.95)
+  m.emissiveNode = rim('#ffe6a0', 2.2, 0.26)
   return m
 }
 

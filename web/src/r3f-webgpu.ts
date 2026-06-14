@@ -46,10 +46,11 @@ export async function createRenderer(props: ConstructorParameters<typeof THREE.W
   })
   await renderer.init()
 
-  // Filmic, warm grade lives in post; the renderer only owns the final
-  // tone-map + sRGB encode (applied by RenderPipeline.outputColorTransform).
-  renderer.toneMapping = THREE.ACESFilmicToneMapping
-  renderer.toneMappingExposure = 1.05
+  // Stylised (Hearthstone/Wayfinder) grade — NOT filmic. Neutral tone-mapping
+  // keeps colours saturated and punchy instead of the desaturated, "realistic"
+  // ACES roll-off. The warm grade + rim live in the materials/post.
+  renderer.toneMapping = THREE.NeutralToneMapping
+  renderer.toneMappingExposure = 1.15
   renderer.shadowMap.enabled = true
   renderer.shadowMap.type = THREE.PCFSoftShadowMap
 
