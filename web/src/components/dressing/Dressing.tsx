@@ -34,10 +34,10 @@ function Poster({ texKey, position, rotation, w = 1.2, h = 1.78, frame }: { texK
   const mat = useMemo(() => posterMaterial(showPoster(texKey)), [texKey])
   return (
     <group position={position} rotation={rotation}>
-      <mesh position={[0, 0, -0.02]} material={frame} castShadow>
+      <mesh position={[0, 0, -0.035]} material={frame} castShadow>
         <boxGeometry args={[w + 0.1, h + 0.1, 0.04]} />
       </mesh>
-      <mesh material={mat}>
+      <mesh material={mat} position={[0, 0, 0.03]}>
         <planeGeometry args={[w, h]} />
       </mesh>
     </group>

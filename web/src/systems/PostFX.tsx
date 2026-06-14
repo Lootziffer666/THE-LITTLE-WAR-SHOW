@@ -13,11 +13,9 @@ import { useEffect, useMemo, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three/webgpu'
 import { bloom } from 'three/addons/tsl/display/BloomNode.js'
-import { dof } from 'three/addons/tsl/display/DepthOfFieldNode.js'
 import { film } from 'three/addons/tsl/display/FilmNode.js'
-import { chromaticAberration } from 'three/addons/tsl/display/ChromaticAberrationNode.js'
 import { pass, uniform, float, vec3, screenUV, dot, mix, clamp } from '../materials/tsl'
-import { CAMERA, LIGHT_PRESETS } from '../config/theater.config'
+import { LIGHT_PRESETS } from '../config/theater.config'
 import { useTheaterStore } from '../state/useTheaterStore'
 
 export function PostFX() {
@@ -30,7 +28,6 @@ export function PostFX() {
   const u = useMemo(
     () => ({
       grain: uniform(0.26),
-      ca: uniform(0.0016),
       vignette: uniform(1.15),
       sat: uniform(1.12),
     }),
@@ -42,22 +39,15 @@ export function PostFX() {
     const post = new THREE.PostProcessing(gl as unknown as THREE.WebGPURenderer)
 
     const scenePass = pass(scene, camera)
-    const color = scenePass.getTextureNode()
-    const viewZ = scenePass.getViewZNode()
-
-    // diorama tilt-shift: a narrow sharp band on the stage, soft fore/back.
-    // Post nodes are dynamic graphs — `any` past here (TSL's published types
-    // don't expose the chainable math on the concrete node subclasses).
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const dofd: any = dof(color, viewZ, float(CAMERA.dofFocus), float(CAMERA.dofRange), float(CAMERA.dofStrength))
+    const color: any = scenePass.getTextureNode()
 
-    // bloom contributes additively; keep the node so we can animate it
-    const b = bloom(dofd, 0.7, 0.85, 0.85)
+    // bloom contributes additively; keep the node so we can animate it.
+    // (The depth-based DoF and chromatic aberration are intentionally omitted
+    // for backend robustness — this subset is the dependable cinematic core.)
+    const b = bloom(color, 0.7, 0.85, 0.85)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let outp: any = dofd.add(b)
-
-    // edge-weighted chromatic aberration
-    outp = chromaticAberration(outp, u.ca)
+    let outp: any = color.add(b)
 
     // warm grade + gentle saturation lift
     const lum = dot(outp, vec3(0.2126, 0.7152, 0.0722))

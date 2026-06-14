@@ -408,6 +408,10 @@ export function paintedFlatMaterial(map: THREE.Texture, opts: { rough?: number; 
   m.roughnessNode = float(opts.rough ?? 0.7)
   m.metalnessNode = float(0)
   m.normalNode = bumpMap(fbm(vec3(uv().mul(40), 0), 2), float(0.05))
+  // surface overlay (sits on a wall/flat) — bias it forward to never z-fight
+  m.polygonOffset = true
+  m.polygonOffsetFactor = -2
+  m.polygonOffsetUnits = -2
   return m
 }
 
@@ -418,6 +422,9 @@ export function posterMaterial(map: THREE.Texture, opts: { gloss?: number } = {}
   m.roughnessNode = float(opts.gloss ?? 0.55).add(fbm(vec3(uv().mul(8), 0), 2).mul(0.2))
   m.metalnessNode = float(0)
   m.normalNode = bumpMap(fbm(vec3(uv().mul(24), 0), 3), float(0.08))
+  m.polygonOffset = true
+  m.polygonOffsetFactor = -2
+  m.polygonOffsetUnits = -2
   return m
 }
 

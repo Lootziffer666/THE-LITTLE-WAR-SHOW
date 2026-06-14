@@ -57,11 +57,11 @@ function Sign({ tex, position, rotation = [0, 0, 0], w = 1, h = 1, frame = false
   return (
     <group position={position} rotation={rotation}>
       {frame && (
-        <mesh position={[0, 0, -0.018]} material={FRAME} castShadow>
+        <mesh position={[0, 0, -0.035]} material={FRAME} castShadow>
           <boxGeometry args={[w + 0.07, h + 0.07, 0.035]} />
         </mesh>
       )}
-      <mesh material={mat}>
+      <mesh material={mat} position={[0, 0, 0.02]}>
         <planeGeometry args={[w, h]} />
       </mesh>
     </group>
