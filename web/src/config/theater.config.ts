@@ -192,9 +192,9 @@ export const LIGHT_PRESETS: Record<
     exitSigns: 1.0,
     moonThroughGlass: 0.4,
     embers: 0.0,
-    bloomStrength: 0.32,
+    bloomStrength: 0.2,
     bloomThreshold: 0.92,
-    exposure: 0.85,
+    exposure: 0.78,
     fogDensity: 0.012,
     fogColor: '#3a2c20',
   },
@@ -208,9 +208,9 @@ export const LIGHT_PRESETS: Record<
     exitSigns: 1.6,
     moonThroughGlass: 1.5,
     embers: 0.7,
-    bloomStrength: 0.5,
+    bloomStrength: 0.3,
     bloomThreshold: 0.74,
-    exposure: 1.0,
+    exposure: 0.9,
     fogDensity: 0.03,
     fogColor: '#10151f',
   },
@@ -224,9 +224,9 @@ export const LIGHT_PRESETS: Record<
     exitSigns: 1.2,
     moonThroughGlass: 0.5,
     embers: 0.0,
-    bloomStrength: 0.5,
+    bloomStrength: 0.3,
     bloomThreshold: 0.9,
-    exposure: 0.8,
+    exposure: 0.72,
     fogDensity: 0.045, // thickest — the show beam needs air to cut through
     fogColor: '#241814',
   },
@@ -262,7 +262,7 @@ export const WORLD_SEED = 0x1ec5
 
 /** Quality knobs (auto-detected at runtime, overridable from the HUD). */
 export const QUALITY_DEFAULTS = {
-  dustCount: 4200,
+  dustCount: 2200,
   shadowMapSize: 2048,
   maxPixelRatio: 2,
 } as const

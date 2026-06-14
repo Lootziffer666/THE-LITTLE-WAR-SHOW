@@ -59,7 +59,7 @@ function useDust() {
     geom.setAttribute('position', new THREE.BufferAttribute(positions, 3))
     geom.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, 4, 8), 40)
 
-    const opacity = uniform(0.18)
+    const opacity = uniform(0.03)
     const mat = new THREE.PointsNodeMaterial()
     const seed = range(0, 6.2832)
     const speed = range(0.25, 0.9)
@@ -115,7 +115,7 @@ function Shaft({
     // h: 0 at base (floor) .. 1 at apex (light). Fade both ends.
     const h = clamp(positionLocal.y.div(length).add(0.5), 0, 1)
     const fade = smoothstep(0, 0.25, h).mul(smoothstep(1, 0.6, h))
-    m.opacityNode = fade.mul(uOpacity).mul(0.5)
+    m.opacityNode = fade.mul(uOpacity).mul(0.18)
     return m
   }, [color, length, uOpacity])
 
@@ -133,10 +133,10 @@ export function Atmosphere() {
 
   useFrame(() => {
     const mode = useTheaterStore.getState().lightMode
-    const dustTarget = mode === 'house' ? 0.14 : mode === 'show' ? 0.5 : 0.4
+    const dustTarget = mode === 'house' ? 0.02 : mode === 'show' ? 0.05 : 0.04
     opacity.value = lerp(opacity.value, dustTarget, 0.05)
-    showOp.current.value = lerp(showOp.current.value, mode === 'show' ? 0.5 : 0.0, 0.05)
-    moonOp.current.value = lerp(moonOp.current.value, mode === 'dark' ? 0.45 : mode === 'house' ? 0.1 : 0.2, 0.05)
+    showOp.current.value = lerp(showOp.current.value, mode === 'show' ? 0.13 : 0.0, 0.05)
+    moonOp.current.value = lerp(moonOp.current.value, mode === 'dark' ? 0.1 : mode === 'house' ? 0.025 : 0.05, 0.05)
   })
 
   return (
@@ -147,15 +147,15 @@ export function Atmosphere() {
         from={[3.2, STAGE.deckY + 7.5, 6.5]}
         to={[0, STAGE.deckY, 0]}
         color="#ffe6c2"
-        topRadius={1.7}
+        topRadius={1.3}
         uOpacity={showOp.current}
       />
       {/* moonlight spilling from the storefront, raked across the house */}
       <Shaft
         from={[2, HOUSE.ceilingY, HOUSE.backZ + 6]}
         to={[-2, 0, HOUSE.frontZ + 4]}
-        color="#bcd0ff"
-        topRadius={2.6}
+        color="#cdd8f0"
+        topRadius={1.5}
         uOpacity={moonOp.current}
       />
     </group>

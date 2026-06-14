@@ -138,9 +138,11 @@ export function Controls() {
           s.togglePost()
           break
         case '[':
+        case '-':
           s.nudgeExposure(-0.08)
           break
         case ']':
+        case '+':
           s.nudgeExposure(0.08)
           break
         case 'r':

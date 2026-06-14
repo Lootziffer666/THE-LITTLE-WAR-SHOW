@@ -44,6 +44,7 @@ export function DirectorHUD() {
   const toggleFlicker = useTheaterStore((s) => s.toggleFlicker)
   const usePost = useTheaterStore((s) => s.usePost)
   const togglePost = useTheaterStore((s) => s.togglePost)
+  const nudgeExposure = useTheaterStore((s) => s.nudgeExposure)
   const firePyro = useTheaterStore((s) => s.firePyro)
   const backend = useTheaterStore((s) => s.backend)
   const showHelp = useTheaterStore((s) => s.showHelp)
@@ -74,6 +75,16 @@ export function DirectorHUD() {
           <span className="hud__label">Curtain</span>
           <button className="hud__btn" data-active={curtain > 0.5} onClick={toggleCurtain}>
             {curtain > 0.5 ? 'Open' : 'Closed'}
+          </button>
+        </div>
+
+        <div className="hud__group">
+          <span className="hud__label">Exp</span>
+          <button className="hud__btn" onClick={() => nudgeExposure(-0.08)} aria-label="darker">
+            −
+          </button>
+          <button className="hud__btn" onClick={() => nudgeExposure(0.08)} aria-label="brighter">
+            +
           </button>
         </div>
 
