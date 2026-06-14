@@ -9,6 +9,7 @@ import { Canvas } from '@react-three/fiber'
 import { createRenderer, isWebGPUBackend } from './r3f-webgpu'
 import { CAMERA } from './config/theater.config'
 import { Theater } from './components/Theater'
+import { DebugProbe } from './components/DebugProbe'
 import { Lighting } from './systems/Lighting'
 import { Atmosphere } from './systems/Atmosphere'
 import { Controls } from './systems/Controls'
@@ -27,6 +28,7 @@ export function App() {
   const [warn, setWarn] = useState<string | null>(null)
   const setBackend = useTheaterStore((s) => s.setBackend)
   const postEnabled = useMemo(() => urlHasFlag('post'), [])
+  const probeEnabled = useMemo(() => urlHasFlag('probe'), [])
 
   useEffect(() => {
     const onWarn = (e: Event) => setWarn((e as CustomEvent).detail ?? 'post-processing disabled')
@@ -55,13 +57,13 @@ export function App() {
         <fogExp2 attach="fog" args={['#1c140e', 0.016]} />
 
         <Suspense fallback={null}>
-          <Theater />
+          {probeEnabled ? <DebugProbe /> : <Theater />}
         </Suspense>
 
-        <Lighting />
-        <Atmosphere />
+        {!probeEnabled && <Lighting />}
+        {!probeEnabled && <Atmosphere />}
         <Controls />
-        {postEnabled && <PostFX />}
+        {!probeEnabled && postEnabled && <PostFX />}
       </Canvas>
 
       <Loader />
@@ -69,7 +71,7 @@ export function App() {
 
       {!postEnabled && !fatal && (
         <div className="warnbar" role="status">
-          Safe preview: WebGL + plain render. Add <code>?post=1</code> for post FX, <code>?webgpu=1</code> for WebGPU.
+          Safe preview: WebGL + plain render. Add <code>?probe=1</code> for the debug cube, <code>?post=1</code> for post FX, <code>?webgpu=1</code> for WebGPU.
         </div>
       )}
 
