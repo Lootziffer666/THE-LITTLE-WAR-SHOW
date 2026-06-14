@@ -35,6 +35,7 @@ export interface TheaterState {
   /** Post-processing on/off (key P) — for taste, perf, or isolating issues. */
   usePost: boolean
   togglePost: () => void
+  setUsePost: (v: boolean) => void
 
   // --- the great curtain (0 = shut, 1 = wide open) ----------------------
   curtain: number
@@ -79,8 +80,9 @@ export const useTheaterStore = create<TheaterState>()((set, get) => ({
   flicker: true,
   toggleFlicker: () => set((s) => ({ flicker: !s.flicker })),
 
-  usePost: true,
+  usePost: false,
   togglePost: () => set((s) => ({ usePost: !s.usePost })),
+  setUsePost: (v) => set({ usePost: v }),
 
   curtain: 0.0,
   setCurtain: (v) => set({ curtain: Math.min(1, Math.max(0, v)) }),

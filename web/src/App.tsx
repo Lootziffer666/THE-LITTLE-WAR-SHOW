@@ -27,8 +27,13 @@ export function App() {
   const [fatal, setFatal] = useState<string | null>(null)
   const [warn, setWarn] = useState<string | null>(null)
   const setBackend = useTheaterStore((s) => s.setBackend)
+  const setUsePost = useTheaterStore((s) => s.setUsePost)
   const postEnabled = useMemo(() => urlHasFlag('post'), [])
   const probeEnabled = useMemo(() => urlHasFlag('probe'), [])
+
+  useEffect(() => {
+    setUsePost(postEnabled)
+  }, [postEnabled, setUsePost])
 
   useEffect(() => {
     const onWarn = (e: Event) => setWarn((e as CustomEvent).detail ?? 'post-processing disabled')
@@ -63,7 +68,9 @@ export function App() {
         {!probeEnabled && <Lighting />}
         {!probeEnabled && <Atmosphere />}
         <Controls />
-        {!probeEnabled && postEnabled && <PostFX />}
+        {/* PostFX owns the render loop (async-correct renderAsync); it renders
+            plain by default and only runs the cinematic pipeline when post is on. */}
+        {!probeEnabled && <PostFX />}
       </Canvas>
 
       <Loader />
@@ -73,7 +80,8 @@ export function App() {
 
       {!postEnabled && !fatal && (
         <div className="warnbar" role="status">
-          Safe preview: WebGL + plain render. Add <code>?probe=1</code> for the debug cube, <code>?post=1</code> for post FX, <code>?webgpu=1</code> for WebGPU.
+          Safe preview — WebGL, plain render. Press <b>FX</b> (bottom bar) or <code>P</code> for the cinematic
+          pipeline · <code>?webgpu=1</code> for the WebGPU backend · <code>?probe=1</code> for the debug cube.
         </div>
       )}
 
