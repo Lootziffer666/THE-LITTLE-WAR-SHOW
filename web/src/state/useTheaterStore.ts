@@ -37,6 +37,10 @@ export interface TheaterState {
   togglePost: () => void
   setUsePost: (v: boolean) => void
 
+  /** User exposure multiplier (keys [ and ]) — live brightness dial. */
+  exposure: number
+  nudgeExposure: (d: number) => void
+
   // --- the great curtain (0 = shut, 1 = wide open) ----------------------
   curtain: number
   setCurtain: (v: number) => void
@@ -83,6 +87,9 @@ export const useTheaterStore = create<TheaterState>()((set, get) => ({
   usePost: false,
   togglePost: () => set((s) => ({ usePost: !s.usePost })),
   setUsePost: (v) => set({ usePost: v }),
+
+  exposure: 1,
+  nudgeExposure: (d) => set((s) => ({ exposure: Math.min(3, Math.max(0.25, s.exposure + d)) })),
 
   curtain: 0.0,
   setCurtain: (v) => set({ curtain: Math.min(1, Math.max(0, v)) }),

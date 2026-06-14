@@ -137,6 +137,12 @@ export function Controls() {
         case 'p':
           s.togglePost()
           break
+        case '[':
+          s.nudgeExposure(-0.08)
+          break
+        case ']':
+          s.nudgeExposure(0.08)
+          break
         case 'r':
           s.resetProps()
           break

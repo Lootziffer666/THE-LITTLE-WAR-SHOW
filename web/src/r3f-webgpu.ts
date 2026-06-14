@@ -50,7 +50,7 @@ export async function createRenderer(props: ConstructorParameters<typeof THREE.W
   // keeps colours saturated and punchy instead of the desaturated, "realistic"
   // ACES roll-off. The warm grade + rim live in the materials/post.
   renderer.toneMapping = THREE.NeutralToneMapping
-  renderer.toneMappingExposure = 1.15
+  renderer.toneMappingExposure = 0.72
   renderer.shadowMap.enabled = true
   renderer.shadowMap.type = THREE.PCFSoftShadowMap
 

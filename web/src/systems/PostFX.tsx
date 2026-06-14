@@ -93,16 +93,21 @@ export function PostFX() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const r = gl as any
     const st = useTheaterStore.getState()
+    const pr = LIGHT_PRESETS[st.lightMode]
+
+    // exposure tracks the active mode × the user's live dial (keys [ and ]),
+    // applied in BOTH plain and post modes so brightness is always controllable.
+    if (typeof r.toneMappingExposure === 'number') {
+      r.toneMappingExposure += (pr.exposure * st.exposure - r.toneMappingExposure) * 0.1
+    }
 
     const present = (): unknown => {
       if (!built || failed.current || !st.usePost) {
         return r.renderAsync ? r.renderAsync(scene, camera) : r.render(scene, camera)
       }
-      const pr = LIGHT_PRESETS[st.lightMode]
       const b = built.bloomNode
       b.strength.value += (pr.bloomStrength - b.strength.value) * 0.06
       b.threshold.value += (pr.bloomThreshold - b.threshold.value) * 0.06
-      if (typeof r.toneMappingExposure === 'number') r.toneMappingExposure += (pr.exposure * 1.05 - r.toneMappingExposure) * 0.06
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const p = built.post as any
       return p.renderAsync ? p.renderAsync() : p.render()
@@ -129,7 +134,8 @@ export function PostFX() {
       if (el) {
         const be = r?.backend?.isWebGPUBackend ? 'WebGPU' : r?.backend ? 'WebGL2' : '—'
         const mode = !built || failed.current ? 'plain' : !st.usePost ? 'plain(off)' : 'post'
-        el.textContent = `${be} · f${frame.current} · ${mode}${lastErr.current ? ' · ERR ' + lastErr.current : ''}`
+        const ex = typeof r.toneMappingExposure === 'number' ? r.toneMappingExposure.toFixed(2) : '—'
+        el.textContent = `${be} · f${frame.current} · ${mode} · ex ${ex} · [ ] exposure${lastErr.current ? ' · ERR ' + lastErr.current : ''}`
       }
     }
   }, 1)
