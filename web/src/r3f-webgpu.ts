@@ -3,8 +3,12 @@
  *
  * Three ships two entry points: the classic WebGL `three` and the node-based
  * `three/webgpu`. We standardise on `three/webgpu` so every material can be a
- * TSL NodeMaterial that compiles to *both* WGSL (WebGPU) and GLSL (WebGL2),
- * giving us the cutting-edge path with an automatic fallback.
+ * TSL NodeMaterial that compiles to both WGSL (WebGPU) and GLSL (WebGL2).
+ *
+ * Runtime rule for this prototype:
+ * - default = force the safer WebGL backend so first visual inspection does not
+ *   die behind an experimental WebGPU/post stack black screen.
+ * - add `?webgpu=1` to the URL to re-enable the WebGPU backend.
  *
  * `extend(THREE)` teaches R3F's reconciler about every class in the WebGPU
  * build so they are usable as JSX (`<meshStandardNodeMaterial />`, etc.), and
@@ -22,18 +26,22 @@ declare module '@react-three/fiber' {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 extend(THREE as any)
 
+function wantsWebGPU(): boolean {
+  if (typeof window === 'undefined') return false
+  return new URLSearchParams(window.location.search).has('webgpu')
+}
+
 /**
  * Async factory handed to `<Canvas gl={...}>`. R3F awaits the returned promise,
  * which is exactly how a `WebGPURenderer` (which needs `await init()`) wants to
- * be constructed. If WebGPU is unavailable the renderer transparently falls
- * back to its WebGL2 backend.
+ * be constructed.
  */
 export async function createRenderer(props: ConstructorParameters<typeof THREE.WebGPURenderer>[0]) {
   const renderer = new THREE.WebGPURenderer({
     antialias: true,
     alpha: false,
     powerPreference: 'high-performance',
-    // `forceWebGL` stays false: prefer WebGPU, fall back automatically.
+    forceWebGL: !wantsWebGPU(),
     ...props,
   })
   await renderer.init()
