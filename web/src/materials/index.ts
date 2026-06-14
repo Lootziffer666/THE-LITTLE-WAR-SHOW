@@ -18,6 +18,7 @@ import {
   time,
   mix,
   smoothstep,
+  step,
   clamp,
   fract,
   floor,
@@ -272,6 +273,25 @@ export function carpetMaterial(): StdMat {
   return m
 }
 
+/** Terrazzo: cream ground with red/black/grey chips, polished, matte where trodden. */
+export function terrazzoMaterial(): StdMat {
+  const m = new THREE.MeshStandardNodeMaterial()
+  const x = positionWorld.x
+  const z = positionWorld.z
+  const p = vec3(x.mul(22), float(0), z.mul(22))
+  let col = cnode('#d8cfb8')
+  col = mix(col, cnode('#7a1f1c'), step(0.74, fbm(p, 2)))
+  col = mix(col, cnode('#2a2620'), step(0.8, fbm(p.add(11.3), 2)))
+  col = mix(col, cnode('#8a8a86'), step(0.78, fbm(p.add(5.0), 2)))
+  col = col.mul(float(0.9).add(fbm(vec3(x.mul(2), float(0), z.mul(2)), 3).mul(0.18)))
+  // worn, matte lane down the entrance axis (x≈0)
+  const lane = smoothstep(2.4, 0.3, abs(x))
+  m.colorNode = col
+  m.metalnessNode = float(0)
+  m.roughnessNode = clamp(float(0.32).add(lane.mul(0.4)), 0.25, 0.85)
+  return m
+}
+
 /** Bare service-area concrete: backstage, storage, plant rooms. */
 export function concreteMaterial(opts: { color?: string } = {}): StdMat {
   const m = new THREE.MeshStandardNodeMaterial()
@@ -431,6 +451,7 @@ export const materials = {
   wainscotMaterial,
   ceilingMaterial,
   carpetMaterial,
+  terrazzoMaterial,
   concreteMaterial,
   giltMaterial,
   brassMaterial,

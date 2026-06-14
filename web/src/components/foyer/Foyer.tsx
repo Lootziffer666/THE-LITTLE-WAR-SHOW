@@ -9,6 +9,7 @@ import * as THREE from 'three/webgpu'
 import { FOYER, HOUSE, PALETTE, WORLD_SEED } from '../../config/theater.config'
 import {
   carpetMaterial,
+  terrazzoMaterial,
   plasterMaterial,
   ceilingMaterial,
   chromeMaterial,
@@ -22,7 +23,8 @@ import {
 import { texture, float } from '../../materials/tsl'
 import { c, cnode } from '../../materials/tsl-helpers'
 import { makeCanvasTexture } from '../../textures/canvasTexture'
-import { snackMenu, boxOfficeCard, marqueeSign } from '../../textures/posters'
+import { snackMenu, boxOfficeCard } from '../../textures/posters'
+import { marqueeBoard } from '../../textures/signage'
 import { Rng } from '../../utils/rng'
 
 type V3 = [number, number, number]
@@ -201,6 +203,7 @@ export function Foyer() {
   const mats = useMemo(
     () => ({
       carpet: carpetMaterial(),
+      terrazzo: terrazzoMaterial(),
       wall: plasterMaterial({ color: PALETTE.foyerWall, grime: 0.3, cracks: 0.3 }),
       ceil: ceilingMaterial(),
       chrome: chromeMaterial(),
@@ -219,7 +222,7 @@ export function Foyer() {
       menu: posterMaterial(snackMenu()),
       box: posterMaterial(boxOfficeCard()),
       marquee: emissiveMaterial('#ffe9b0', 1.4),
-      marqueeTex: posterMaterial(marqueeSign()),
+      marqueeTex: posterMaterial(marqueeBoard('BARLOW CIVIC PLAYHOUSE', 'THE LITTLE WAR SHOW — REVIVAL')),
     }),
     [],
   )
@@ -230,9 +233,12 @@ export function Foyer() {
 
   return (
     <group name="Foyer">
-      {/* shell */}
-      <mesh material={mats.carpet} position={[0, -0.02, cz]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+      {/* shell — original terrazzo, with a cheap later carpet runner over it */}
+      <mesh material={mats.terrazzo} position={[0, -0.03, cz]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[FOYER.width, zLen]} />
+      </mesh>
+      <mesh material={mats.carpet} position={[0, -0.016, cz]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={[4.2, zLen - 1.6]} />
       </mesh>
       <mesh material={mats.ceil} position={[0, FOYER.ceilingY, cz]}>
         <boxGeometry args={[FOYER.width, 0.3, zLen]} />

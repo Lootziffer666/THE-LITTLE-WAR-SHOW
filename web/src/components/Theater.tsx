@@ -12,7 +12,9 @@ import { StageProps } from './shell/StageProps'
 import { Seating } from './seating/Seating'
 import { Foyer } from './foyer/Foyer'
 import { Backstage } from './backstage/Backstage'
+import { ControlBooth } from './backstage/ControlBooth'
 import { Dressing } from './dressing/Dressing'
+import { Storytelling } from './story/Storytelling'
 import { TechConsole } from './console/TechConsole'
 import { Pyrotechnics } from './console/Pyrotechnics'
 
@@ -30,7 +32,9 @@ export function Theater() {
       <Seating />
       <Foyer />
       <Backstage />
+      <ControlBooth />
       <Dressing />
+      <Storytelling />
 
       {/* --- interactive / FX --- */}
       <TechConsole />
