@@ -85,20 +85,20 @@ export function Lighting() {
     glow.neon.value = lerp(glow.neon.value, mode === 'dark' ? 1.15 : 0.9, k)
 
     // --- real lights ----------------------------------------------------
-    if (ambientRef.current) ambientRef.current.intensity = lerp(ambientRef.current.intensity, p.ambient * 1.9, k)
-    if (hemiRef.current) hemiRef.current.intensity = lerp(hemiRef.current.intensity, p.ambient * 1.7, k)
+    if (ambientRef.current) ambientRef.current.intensity = lerp(ambientRef.current.intensity, p.ambient * 2.8, k)
+    if (hemiRef.current) hemiRef.current.intensity = lerp(hemiRef.current.intensity, p.ambient * 2.0, k)
     if (fillRef.current) fillRef.current.intensity = lerp(fillRef.current.intensity, p.fill * 1.5, k)
-    if (moonRef.current) moonRef.current.intensity = lerp(moonRef.current.intensity, p.moonThroughGlass * 0.9, k)
-    if (keyRef.current) keyRef.current.intensity = lerp(keyRef.current.intensity, p.keySpot * 13 * f.value, k)
+    if (moonRef.current) moonRef.current.intensity = lerp(moonRef.current.intensity, p.moonThroughGlass * 1.0, k)
+    if (keyRef.current) keyRef.current.intensity = lerp(keyRef.current.intensity, p.keySpot * 30 * f.value, k)
 
     for (const cl of chandRefs.current) {
-      if (cl) cl.intensity = lerp(cl.intensity, p.houseChandeliers * 14 * f.value, k)
+      if (cl) cl.intensity = lerp(cl.intensity, p.houseChandeliers * 22 * f.value, k)
     }
     for (const fl of footRefs.current) {
-      if (fl) fl.intensity = lerp(fl.intensity, p.footlights * 6, k)
+      if (fl) fl.intensity = lerp(fl.intensity, p.footlights * 8, k)
     }
     for (const el of exitRefs.current) {
-      if (el) el.intensity = lerp(el.intensity, p.exitSigns * 1.6, k)
+      if (el) el.intensity = lerp(el.intensity, p.exitSigns * 2.0, k)
     }
 
     // atmospheric haze tracks the mode (thickest for the show beam)

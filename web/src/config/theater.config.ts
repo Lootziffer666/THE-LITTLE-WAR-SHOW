@@ -192,10 +192,10 @@ export const LIGHT_PRESETS: Record<
     exitSigns: 1.0,
     moonThroughGlass: 0.08,
     embers: 0.0,
-    bloomStrength: 0.2,
+    bloomStrength: 0.28,
     bloomThreshold: 0.92,
-    exposure: 0.78,
-    fogDensity: 0.012,
+    exposure: 1.0,
+    fogDensity: 0.006,
     fogColor: '#3a2c20',
   },
   dark: {
@@ -208,10 +208,10 @@ export const LIGHT_PRESETS: Record<
     exitSigns: 1.6,
     moonThroughGlass: 1.1,
     embers: 0.7,
-    bloomStrength: 0.3,
+    bloomStrength: 0.55,
     bloomThreshold: 0.74,
-    exposure: 0.9,
-    fogDensity: 0.03,
+    exposure: 1.15,
+    fogDensity: 0.016,
     fogColor: '#10151f',
   },
   show: {
@@ -224,10 +224,10 @@ export const LIGHT_PRESETS: Record<
     exitSigns: 1.2,
     moonThroughGlass: 0.12,
     embers: 0.0,
-    bloomStrength: 0.3,
+    bloomStrength: 0.5,
     bloomThreshold: 0.9,
-    exposure: 0.72,
-    fogDensity: 0.045, // thickest — the show beam needs air to cut through
+    exposure: 0.92,
+    fogDensity: 0.02, // thickest — the show beam needs air to cut through
     fogColor: '#241814',
   },
 }

@@ -28,6 +28,7 @@ export function App() {
   const [warn, setWarn] = useState<string | null>(null)
   const setBackend = useTheaterStore((s) => s.setBackend)
   const setUsePost = useTheaterStore((s) => s.setUsePost)
+  const usePost = useTheaterStore((s) => s.usePost)
   const postEnabled = useMemo(() => urlHasFlag('post'), [])
   const probeEnabled = useMemo(() => urlHasFlag('probe'), [])
 
@@ -78,10 +79,10 @@ export function App() {
       <div id="diag" className="diag" />
       {!fatal && <DirectorHUD />}
 
-      {!postEnabled && !fatal && (
+      {!usePost && !fatal && (
         <div className="warnbar" role="status">
-          Safe preview — WebGL, plain render. Press <b>FX</b> (bottom bar) or <code>P</code> for the cinematic
-          pipeline · <code>?webgpu=1</code> for the WebGPU backend · <code>?probe=1</code> for the debug cube.
+          Plain render. Press <b>FX</b> (bottom bar) or <code>P</code> for the cinematic pipeline ·
+          <code>?webgpu=1</code> for the WebGPU backend · <code>?probe=1</code> for the debug cube.
         </div>
       )}
 

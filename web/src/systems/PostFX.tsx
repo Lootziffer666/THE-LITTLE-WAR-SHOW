@@ -29,7 +29,7 @@ export function PostFX() {
     () => ({
       grain: uniform(0.22),
       vignette: uniform(1.15),
-      sat: uniform(1.22),
+      sat: uniform(1.5),
     }),
     [],
   )

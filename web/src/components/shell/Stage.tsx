@@ -12,7 +12,7 @@ export function Stage() {
   const deckMat = useMemo(() => stageDeckMaterial(), [])
   const apronMat = useMemo(() => darkWoodMaterial({ tone: PALETTE.woodDark }), [])
   const houseMat = useMemo(() => darkWoodMaterial({ tone: '#1b1612', planks: false }), [])
-  const cycMat = useMemo(() => plasterMaterial({ color: '#2b313b', grime: 0.3, cracks: 0.2 }), [])
+  const cycMat = useMemo(() => plasterMaterial({ color: '#39312b', grime: 0.3, cracks: 0.2 }), [])
   const hw = STAGE.width / 2
 
   return (

@@ -46,11 +46,11 @@ export async function createRenderer(props: ConstructorParameters<typeof THREE.W
   })
   await renderer.init()
 
-  // Stylised (Hearthstone/Wayfinder) grade — NOT filmic. Neutral tone-mapping
-  // keeps colours saturated and punchy instead of the desaturated, "realistic"
-  // ACES roll-off. The warm grade + rim live in the materials/post.
-  renderer.toneMapping = THREE.NeutralToneMapping
-  renderer.toneMappingExposure = 0.66
+  // ACES filmic = safe exposure (warm highlight roll-off, never blows out or
+  // casts cyan). The stylised pop comes from saturated materials + warm grade +
+  // rim, NOT from a linear tone-mapper.
+  renderer.toneMapping = THREE.ACESFilmicToneMapping
+  renderer.toneMappingExposure = 1.0
   renderer.shadowMap.enabled = true
   renderer.shadowMap.type = THREE.PCFSoftShadowMap
 
