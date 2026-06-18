@@ -1,0 +1,86 @@
+<div class="world"></div>
+
+<div id="credits">
+  <p> <a href="https://codepen.io/Yakudoo/"  target="blank">my other codepens</a> | <a href="https://www.epic.net" target="blank">epic.net</a></p>
+</div>
+
+<script type="x-shader/x-fragment" id="fragmentShader">
+	precision highp float;
+
+	varying vec2 vUv;
+	uniform sampler2D textureImage;
+  uniform sampler2D textureDepth;
+	uniform sampler2D textureNormal;
+	uniform sampler2D textureNoise;
+	
+	uniform vec2 mousePosition;
+	uniform float time;
+	float PI = 3.141592;
+
+	void main () {	
+		vec4 texDepth = texture2D(textureDepth, vUv);
+		vec4 texNoise = texture2D(textureNoise, vUv + time*.05);
+		vec4 texNoise2 = texture2D(textureNoise, vUv*.1 + time*.1);
+		
+		float depthVal = texDepth.r - .7;		
+		float noiseVal = texNoise.r - .5;
+		float noiseVal2 = texNoise2.r - .5;
+	
+		float distToCenter = pow( distance(vUv, vec2(.5,.5)), 4.0 );
+		float distToMouse = 1.0 - smoothstep(0.0, 0.25, distance(mousePosition + vec2(.5, .5), vUv));
+		
+		vec2 dispDepth = vUv + mousePosition * depthVal * .1; 
+		vec2 dispWaves = vec2(noiseVal * distToCenter);
+		vec2 dispMouse = vec2(noiseVal2 * .10 * distToMouse);
+		
+		vec4 texImage = texture2D(textureImage, dispDepth + dispWaves + dispMouse );
+		vec4 texNormal = texture2D(textureNormal, dispDepth + dispWaves + dispMouse);
+		
+		// PARTICLES
+		
+		vec4 particles = texture2D(textureNoise, dispWaves + vec2( vUv.x - sin(time * .5), vUv.y - sin(time) ));
+		float thr1 = .05 + sin(time*4.0)*.05;
+		texImage.rgb *= smoothstep(thr1,thr1+.03, particles.r);
+		
+		
+		// FOG RED
+		vec4 displacedDepth = texture2D(textureDepth, dispDepth + dispWaves + dispMouse );
+		vec4 smokeNoise1 = texture2D(textureNoise, dispDepth - vec2(time * .3));
+		texImage.r *= 1. + (displacedDepth.b * (40.0 + smokeNoise1.r ) * pow(1.0 - vUv.y, 6.0) * (1.0 + sin(time*1.0)) *.1 ) ;
+		
+		
+		// FOG BLUE
+		vec4 smokeNoise2 = texture2D(textureNoise, dispDepth - vec2(time * .1, time * .5) );
+		texImage.b *= 1. + (displacedDepth.g * (6.0 + sin(time * 5.0) ) * (.5 + smokeNoise2.r * ( 1.0 + sin(time) * .5 ) ) * vUv.y) ;
+	 
+		// LIGHTENING
+		float lighteningValue = texture2D(textureNoise, vec2(time*.1)).r;
+		lighteningValue = 1. - smoothstep(.6,.65, lighteningValue) * .3;
+		texImage.rg *= lighteningValue;
+		
+		// MOUSE LIGHT
+		
+		vec3 lightDirection = normalize(vec3(mousePosition.x, mousePosition.y, .3));
+		vec3 pixDirection = normalize(vec3(texNormal.r * 2.0 - 1.0, texNormal.b * 2.0 - 1.0, -texNormal.g * 2.0 + 1.0));
+		float lightVal = dot(pixDirection, lightDirection);
+		texImage.rgb *= .9 + ( distToMouse *  lightVal * (1.0 - displacedDepth.g)) * (2.0 + sin(time)*.5);
+		
+		
+		
+		gl_FragColor = vec4(texImage);
+	}
+</script>  
+
+<script type="x-shader/x-vertex" id="vertexShader">  
+  attribute vec3 position;
+	attribute vec2 uv;
+	uniform mat4 projectionMatrix;
+	uniform mat4 modelViewMatrix;
+	uniform mat3 normalMatrix;
+	varying vec2 vUv;	
+	
+	void main() {
+		vUv = uv;	
+		gl_Position = projectionMatrix * modelViewMatrix * vec4 ( position, 1.0);
+	}
+</script>

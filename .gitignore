@@ -5,3 +5,10 @@
 /build/
 *.exe
 *.pck
+
+# Reference images — local only, do not commit (large binaries)
+/reference/*.png
+/reference/*.jpg
+/reference/*.jpeg
+/reference/*.webp
+/reference/*.gif
